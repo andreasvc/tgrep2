@@ -369,9 +369,22 @@ static FILE *openPipe(char *pipeName, char *mode) {
   return pipe;
 }
 
+static void escapeSingleQuotes(char *in, char *out) {
+  size_t x, y;
+  for (x = y = 0; in[y]; y++) {
+	/* replace single quote with '\''
+	 * i.e., end single-quoted argument, insert literal quote,
+	 * resume single-quoted argument. */
+    if (in[y] == '\'') x += sprintf(out + x, "'\\''");
+    else out[x++] = in[y];
+  }
+  out[x] = 0;
+}
+
 static FILE *readZippedFile(char *command, char *fileName) {
-  char buf[MAX_FILENAME];
-  sprintf(buf, "%s < %s 2>/dev/null", command, fileName);
+  char buf[MAX_FILENAME], escapedfilename[MAX_FILENAME];
+  escapeSingleQuotes(fileName, escapedfilename);
+  sprintf(buf, "%s < '%s' 2>/dev/null", command, escapedfilename);
   return openPipe(buf, "r");
 }
 
@@ -438,14 +451,15 @@ FILE *readFile(char *fileName) {
 }
 
 static FILE *writeZippedFile(char *fileName, flag append) {
-  char buf[MAX_FILENAME];
+  char buf[MAX_FILENAME], escapedfilename[MAX_FILENAME];
   char *op = (append) ? ">>" : ">";
+  escapeSingleQuotes(fileName, escapedfilename);
   if (stringEndsIn(fileName, ".bz2") || stringEndsIn(fileName, ".bz"))
-    sprintf(buf, "%s %s \"%s\"", BZIP2, op, fileName);
+    sprintf(buf, "%s %s '%s'", BZIP2, op, escapedfilename);
   else if (stringEndsIn(fileName, ".Z"))
-    sprintf(buf, "%s %s \"%s\"", COMPRESS, op, fileName);
+    sprintf(buf, "%s %s '%s'", COMPRESS, op, escapedfilename);
   else
-    sprintf(buf, "%s %s \"%s\"", ZIP, op, fileName);
+    sprintf(buf, "%s %s '%s'", ZIP, op, escapedfilename);
   return openPipe(buf, "w");
 }
 
