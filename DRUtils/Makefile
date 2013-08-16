@@ -1,9 +1,9 @@
-CC = gcc -Wall -O4 -march=i486
+CC = gcc -Wall -O4 -march=native
 FLAGS = -DMACHINE_LINUX
 DEBUG =
 
 # Windows:
-ifeq ($(HOSTTYPE),i686)
+ifeq ($(HOSTTYPE),windows)
   FLAGS = -DMACHINE_WINDOWS
 endif
 # Macintosh:
@@ -26,21 +26,17 @@ endif
 OBJ=drutils.o hash.o svd.o
 FLAGS += ${DEBUG}
 
-libdrutils.a: $(HOSTTYPE) $(OBJ)
-	rm -f $@ $(HOSTTYPE)/$@
+libdrutils.a: $(OBJ)
+	rm -f $@
 	ar cr $@ $(OBJ)
 	ranlib $@
-	mv -f $@ $(HOSTTYPE)/$@
-	ln -s $(HOSTTYPE)/$@ $@
 
 debug:
 	${MAKE} DEBUG=-DSMART_ALLOC libdrutils-dbg.a
-libdrutils-dbg.a: $(HOSTTYPE) $(OBJ)
-	rm -f $@ $(HOSTTYPE)/$@
+libdrutils-dbg.a: $(OBJ)
+	rm -f $@
 	ar cr $@ $(OBJ)
 	ranlib $@
-	mv -f $@ $(HOSTTYPE)/$@
-	ln -s $(HOSTTYPE)/$@ $@
 
 drutils.o	: drutils.c drutils.h system.h
 	$(CC) $(FLAGS) -c drutils.c
@@ -50,7 +46,3 @@ svd.o           : svd.c svd.h drutils.h
 	$(CC) $(FLAGS) -c svd.c
 clean		:
 	rm -f *.o libdrutils.a
-
-$(HOSTTYPE):
-	if test ! -d $(HOSTTYPE); \
-	then mkdir $(HOSTTYPE); fi
