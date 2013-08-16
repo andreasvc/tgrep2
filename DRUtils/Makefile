@@ -26,6 +26,8 @@ endif
 OBJ=drutils.o hash.o svd.o
 FLAGS += ${DEBUG}
 
+.PHONY: clean debug 
+
 libdrutils.a: $(OBJ)
 	rm -f $@
 	ar cr $@ $(OBJ)
@@ -38,11 +40,11 @@ libdrutils-dbg.a: $(OBJ)
 	ar cr $@ $(OBJ)
 	ranlib $@
 
-drutils.o	: drutils.c drutils.h system.h
+drutils.o: drutils.c drutils.h system.h
 	$(CC) $(FLAGS) -c drutils.c
-hash.o		: hash.c hash.h drutils.h
+hash.o: hash.c hash.h drutils.h
 	$(CC) $(FLAGS) -c hash.c
-svd.o           : svd.c svd.h drutils.h
+svd.o: svd.c svd.h drutils.h
 	$(CC) $(FLAGS) -c svd.c
-clean		:
+clean:
 	rm -f *.o libdrutils.a
