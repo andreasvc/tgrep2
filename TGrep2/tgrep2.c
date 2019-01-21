@@ -64,19 +64,19 @@
 
 /* Enumerations */
 enum memTypes {MEM_TEMP, MEM_LINK, MEM_TREE, MEM_WORD, MEM_STRING, 
-	       MEM_PATTERN, MEM_FORMAT, MEM_SENTENCE, MEM_MACRO, MEM_TYPES};
+               MEM_PATTERN, MEM_FORMAT, MEM_SENTENCE, MEM_MACRO, MEM_TYPES};
 
 enum linkTypes {DOM_LEFT, IS_DOM_LEFT, DOM_RIGHT, IS_DOM_RIGHT, DOM_ONLY, 
-		IS_DOM_ONLY, DOMINATES, IS_DOMINATED, HAS_CHILD_LEFT, 
-		HAS_CHILD_RIGHT, HAS_CHILD_ONLY, HAS_CHILD, IS_CHILD_LEFT, 
-		IS_CHILD_RIGHT, IS_CHILD_ONLY, IS_CHILD, IS_PRIOR, IS_AFTER, 
-		IMM_PRIOR, IMM_AFTER, SIS_PRIOR, SIS_AFTER, SIS_IMM_PRIOR, 
-		SIS_IMM_AFTER, HAS_SIS, HAS_CHILD_NUM, IS_CHILD_NUM,
-		EQUAL, SAME_NAME, LINK_TYPES};
+                IS_DOM_ONLY, DOMINATES, IS_DOMINATED, HAS_CHILD_LEFT, 
+                HAS_CHILD_RIGHT, HAS_CHILD_ONLY, HAS_CHILD, IS_CHILD_LEFT, 
+                IS_CHILD_RIGHT, IS_CHILD_ONLY, IS_CHILD, IS_PRIOR, IS_AFTER, 
+                IMM_PRIOR, IMM_AFTER, SIS_PRIOR, SIS_AFTER, SIS_IMM_PRIOR, 
+                SIS_IMM_AFTER, HAS_SIS, HAS_CHILD_NUM, IS_CHILD_NUM,
+                EQUAL, SAME_NAME, LINK_TYPES};
 
 enum outputTypes {F_STRING, F_FILENAME, F_SNUM, F_PNUM, F_SMATCHNUM, 
-		  F_PMATCHNUM, F_COMMENT, F_HEAD, F_MARKED, F_WHOLE, F_LABEL, 
-		  F_CONTEXT};
+                  F_PMATCHNUM, F_COMMENT, F_HEAD, F_MARKED, F_WHOLE, F_LABEL, 
+                  F_CONTEXT};
 
 enum outputFormat {F_SHORT, F_LONG, F_TERMINAL, F_NUM, F_CODE, F_TOPNODE, 
                    F_FIRST, F_LAST, F_LENGTH, F_DEPTH};
@@ -345,7 +345,7 @@ FILE *openCorpusFile(char *filename) {
       if (S->s[i] == 'C') HasComments = TRUE;
       else if (S->s[i] == 'K') ManyKids = TRUE;
       else fatalError("\"%s\" has an unrecognized type flag: %c\n",
-		      filename, S->s[i]);
+                      filename, S->s[i]);
     }
   } 
   freeString(S);
@@ -625,8 +625,8 @@ char isPrintable(Node P) {
       if (L->not) return FALSE;
       if (L->parentLink) L = L->parentLink;
       else {
-	P = L->parentNode;
-	L = NULL;
+        P = L->parentNode;
+        L = NULL;
       }
     }
   }
@@ -658,9 +658,9 @@ void printComment(Sentence S) {
 
 void addMacro(char *macro, char *value) {
   if (!Macros) Macros = hashTableCreate(64, 2, hashString, compareStrings, 
-					MEM_MACRO);
+                        MEM_MACRO);
   hashTableInsert(Macros, copyString(macro, MEM_MACRO), 
-		  copyString(value, MEM_MACRO), FALSE);
+                  copyString(value, MEM_MACRO), FALSE);
 }
 
 char *getMacro(char *macro) {
@@ -679,10 +679,10 @@ void macroSubstitute(String A, String B) {
       char *value;
       clearString(Buffer);
       for (i = 1; !strchr(SpecialSymbols, s[i]); i++)
-	stringCat(Buffer, s[i]);
+        stringCat(Buffer, s[i]);
       s += i - 1;
       if (!(value = getMacro(Buffer->s)))
-	fatalError("Undefined macro: \"%s\"", Buffer->s);
+        fatalError("Undefined macro: \"%s\"", Buffer->s);
       stringAppend(B, value);
     } else stringCat(B, *s);
   }
@@ -777,7 +777,7 @@ Link parseLinkType(char **sp) {
     } else {
       int shift, num;
       if (sscanf(s, "%d%n", &num, &shift) != 1)
-	fatalError("Error parsing link child num here: \"%s\"", s);
+        fatalError("Error parsing link child num here: \"%s\"", s);
       L->childNum = num;
       s += shift;
     }
@@ -842,8 +842,8 @@ Node parsePatternName(char **sp) {
     names = smartMalloc(maxNames * sizeof(struct wpat), MEM_PATTERN);
     while (*s && !strchr(SpecialSymbols, *s)) {
       if (numNames == maxNames) {
-	maxNames *= 2;
-	names = smartRealloc(names, maxNames*sizeof(struct wpat), MEM_PATTERN);
+        maxNames *= 2;
+        names = smartRealloc(names, maxNames*sizeof(struct wpat), MEM_PATTERN);
       }
       V = names + numNames++;
       memset(V, 0, sizeof(struct wpat));
@@ -851,39 +851,39 @@ Node parsePatternName(char **sp) {
 
       clearString(S);
       if (*s == '/') {
-	/* This is a regexp. */
-	for (s++; *s && (*s != '/' || s[-1] == '\\'); s++)
-	  stringCat(S, *s);
-	if (*s != '/') 
-	  fatalError("Unterminated regular expression in pattern %d", 
-		     CurrentPattern->num);
-	s++;
-	V->regExp = regExpComp(S->s);
-	V->type = W_REGEXP;
+        /* This is a regexp. */
+        for (s++; *s && (*s != '/' || s[-1] == '\\'); s++)
+          stringCat(S, *s);
+        if (*s != '/') 
+          fatalError("Unterminated regular expression in pattern %d", 
+                     CurrentPattern->num);
+        s++;
+        V->regExp = regExpComp(S->s);
+        V->type = W_REGEXP;
       } else if (*s == '"') {
-	/* This is a quoted string. */
-	for (s++; *s != '"' || s[-1] == '\\'; s++) {
-	  if (*s == '"') S->s[S->numChars - 1] = '"';
-	  else stringCat(S, *s);
-	}
-	s++;
+        /* This is a quoted string. */
+        for (s++; *s != '"' || s[-1] == '\\'; s++) {
+          if (*s == '"') S->s[S->numChars - 1] = '"';
+          else stringCat(S, *s);
+        }
+        s++;
       } else {
-	/* This is a normal symbol. */
-	for (; !strchr(SpecialSymbols, *s); s++)
-	  stringCat(S, *s);
+        /* This is a normal symbol. */
+        for (; !strchr(SpecialSymbols, *s); s++)
+          stringCat(S, *s);
       }
       if (*s == '|' && s[1] && !strchr(SpecialSymbols, s[1])) s++;
       
       V->string = copyString(S->s, MEM_PATTERN);
       if (V->type != W_REGEXP && (!strcmp(S->s, "__") || !strcmp(S->s, "*")))
-	V->type = W_ALL;
+        V->type = W_ALL;
     }
     if (*s == '=') {
       clearString(S);
       for (s++; !strchr(SpecialSymbols, *s); s++)
-	stringCat(S, *s);
+        stringCat(S, *s);
       if (!(P = lookupLabel(S->s)))
-	label = copyString(S->s, MEM_PATTERN);
+        label = copyString(S->s, MEM_PATTERN);
     }
   }
   
@@ -894,11 +894,11 @@ Node parsePatternName(char **sp) {
       registerLabel(P);
     } else if (!names)
       fatalError("Pattern %d is truncated or has a node with no name.", 
-		 CurrentPattern->num);
+                 CurrentPattern->num);
   } else {
     if (names && P->names) 
       fatalError("Label \"%s\" is used to refer to two different nodes", 
-		 P->label);
+                 P->label);
   }
   if (numNames) {
     P->numNames = numNames;
@@ -942,16 +942,16 @@ Link parsePatternLinks(char **sp) {
          *s != ';' && *s != ':') {
     if (L->numLinks) {
       if (*s == '|') {
-	L = O;
-	s++;
+        L = O;
+        s++;
       } else {
-	if (L == O) {
-	  L = newLink();
-	  L->operator = AND;
-	  addLink(L, O->link[O->numLinks - 1]);
-	  O->link[O->numLinks - 1] = L;
-	}
-	if (*s == '&') s++;
+        if (L == O) {
+          L = newLink();
+          L->operator = AND;
+          addLink(L, O->link[O->numLinks - 1]);
+          O->link[O->numLinks - 1] = L;
+        }
+        if (*s == '&') s++;
       }
     }
     skipBlank(&s);
@@ -1019,14 +1019,14 @@ Node parsePatternNode(char **sp, char top) {
     } else {
       Link L = parsePatternLinks(sp);
       if (P->link) {
-	if (!P->link->node && P->link->operator == AND) {
+        if (!P->link->node && P->link->operator == AND) {
           addLink(P->link, L);
         } else {
-	  Link N = newLink();
-	  N->operator = AND;
-	  addLink(N, P->link);
-	  addLink(N, L);
-	  P->link = N;
+          Link N = newLink();
+          N->operator = AND;
+          addLink(N, P->link);
+          addLink(N, L);
+          P->link = N;
         }
       } else P->link = L;
     }
@@ -1152,17 +1152,17 @@ int preparePattern(Node P, char pos) {
   CurrentPattern->numNodes++;
   if (P->preNum) {
     fatalError("The links in pattern %d form a cycle of crossing edges.",
-	       CurrentPattern->num);
+               CurrentPattern->num);
   }
   if (!P->names) {
     fatalError("The label \"%s\" refers to a node that has not been given a \n"
-	       "pattern to match the node name.", P->label);
+               "pattern to match the node name.", P->label);
   }
   if (P->print) {
     if (!pos) {
       String S = printNodeToString(P);
       fatalError("Node \"%s\" is marked for printing but is part of a "
-		 "non-match.", S->s);
+                 "non-match.", S->s);
     } else CurrentPattern->numPrints++;
   }
   P->preNum = bh = PreNum++;
@@ -1232,7 +1232,7 @@ void buildPattern(char *pattern) {
       s++;
       clearString(original);
       for (skipBlank(&s); !strchr(SpecialSymbols, *s); s++)
-	stringCat(original, *s);
+        stringCat(original, *s);
       
       clearString(Buffer);
       skipBlank(&s);
@@ -1246,7 +1246,7 @@ void buildPattern(char *pattern) {
     if (NumPatterns >= maxPatterns) {
       maxPatterns *= 2;
       Patterns = smartRealloc(Patterns, maxPatterns * sizeof(Pattern), 
-			      MEM_PATTERN);
+                              MEM_PATTERN);
     }
     R = newPattern();
 
@@ -1256,8 +1256,8 @@ void buildPattern(char *pattern) {
       s++;
       N = parsePatternNode(&s, TRUE);
       if (N && N->inLinks == 0 && N != P) {
-	String S = printNodeToString(N);
-	fatalError("Node \"%s\" isn't reachable from the start node in pattern %d.", S->s, CurrentPattern->num);
+        String S = printNodeToString(N);
+        fatalError("Node \"%s\" isn't reachable from the start node in pattern %d.", S->s, CurrentPattern->num);
       }
     }
     if (*s && *s != ';')
@@ -1341,16 +1341,16 @@ void printLinks(Link L, char bracket, int depth) {
     if (bracket) {fputc(OpenLogicChar, stderr); depth++;}
     for (i = 0; i < L->numLinks; i++) {
       if (i > 0) {
-	if (L->operator == OR) {
-	  fputs("| ", stderr); 
-	  if (i == 1) d += 2;
-	}
+        if (L->operator == OR) {
+          fputs("| ", stderr); 
+          if (i == 1) d += 2;
+        }
       }
       printLinks(L->link[i], TRUE, depth + d);
       if (i < L->numLinks - 1) {
-	int j;
-	fputc('\n', stderr);
-	for (j = 0; j < depth; j++) fputc(' ', stderr);
+        int j;
+        fputc('\n', stderr);
+        for (j = 0; j < depth; j++) fputc(' ', stderr);
       }
     }
     if (bracket) fputc(CloseLogicChar, stderr);
@@ -1388,11 +1388,11 @@ void lookupWords(void) {
     for (n = 0; n < P->numNodes; n++) {
       Node N = P->node[n];
       for (i = 0; i < N->numNames; i++) {
-	V = N->names + i;
-	if (V->type == W_CONST) {
-	  V->word = hashTableLookup(WordHash, V->string);
-	  if (!V->word) V->type = W_NONE;
-	}
+        V = N->names + i;
+        if (V->type == W_CONST) {
+          V->word = hashTableLookup(WordHash, V->string);
+          if (!V->word) V->type = W_NONE;
+        }
       }
     }
   }
@@ -1427,87 +1427,87 @@ Format parseFormat(char *format) {
       case 'n': F->format = F_NUM;      s++; break;
       case 'x': F->format = F_CODE;     s++; break;
       case 'u': F->format = F_TOPNODE;  s++; break;
-      case 'y':	F->format = F_FIRST;  ComputeLengths = TRUE; s++; break;
-      case 'z':	F->format = F_LAST;   ComputeLengths = TRUE; s++; break;
-      case 'k':	F->format = F_LENGTH; ComputeLengths = TRUE; s++; break;
-      case 'd':	F->format = F_DEPTH;    s++; break;
+      case 'y': F->format = F_FIRST;  ComputeLengths = TRUE; s++; break;
+      case 'z': F->format = F_LAST;   ComputeLengths = TRUE; s++; break;
+      case 'k': F->format = F_LENGTH; ComputeLengths = TRUE; s++; break;
+      case 'd': F->format = F_DEPTH;    s++; break;
       }
       if (*s == '-' || isdigit(*s)) {
-	int shift;
-	sscanf(s, "%d%n", &(F->num), &shift);
-	s += shift;
+        int shift;
+        sscanf(s, "%d%n", &(F->num), &shift);
+        s += shift;
       }
       switch (*s) {
       case 'f':
-	F->type = F_FILENAME; break;
+        F->type = F_FILENAME; break;
       case 's':
-	F->type = F_SNUM; break;
+        F->type = F_SNUM; break;
       case 'p':
-	F->type = F_PNUM; break;
+        F->type = F_PNUM; break;
       case 'i':
-	F->type = F_SMATCHNUM; break;
+        F->type = F_SMATCHNUM; break;
       case 'j':
-	F->type = F_PMATCHNUM; break;
+        F->type = F_PMATCHNUM; break;
       case 'c':
-	F->type = F_COMMENT; break;
+        F->type = F_COMMENT; break;
       case 'h':
-	F->type = F_HEAD; break;
+        F->type = F_HEAD; break;
       case 'm':
-	F->type = F_MARKED; break;
+        F->type = F_MARKED; break;
       case 'w':
-	F->type = F_WHOLE; break;
+        F->type = F_WHOLE; break;
       case 'b':
-	F->type = F_CONTEXT; 
-	if (F->num <= 0) F->num = 1;
-	if (F->num > NumBefore) NumBefore = F->num;
-	F->num = -F->num;
-	break;
+        F->type = F_CONTEXT; 
+        if (F->num <= 0) F->num = 1;
+        if (F->num > NumBefore) NumBefore = F->num;
+        F->num = -F->num;
+        break;
       case 'a':
-	F->type = F_CONTEXT;
-	if (F->num <= 0) F->num = 1;
-	if (F->num > NumAfter) NumAfter = F->num;
-	break;
+        F->type = F_CONTEXT;
+        if (F->num <= 0) F->num = 1;
+        if (F->num > NumAfter) NumAfter = F->num;
+        break;
       case '=':
-	F->type = F_LABEL;
-	for (s++; *s && *s != '='; s++)
-	  stringCat(S, *s);
-	F->label = copyString(S->s, MEM_FORMAT);
-	break;
+        F->type = F_LABEL;
+        for (s++; *s && *s != '='; s++)
+          stringCat(S, *s);
+        F->label = copyString(S->s, MEM_FORMAT);
+        break;
       default: fatalError("Bad print format field code: %c", *s);
       }
       if (F->type == F_FILENAME || F->type == F_COMMENT) {
-	clearString(S);
-	if (F->num) sprintf(S->s, "%%%ds", F->num);
-	else sprintf(S->s, "%%s");
+        clearString(S);
+        if (F->num) sprintf(S->s, "%%%ds", F->num);
+        else sprintf(S->s, "%%s");
       } else {
-	clearString(S);
-	if (F->num) sprintf(S->s, "%%%dd", F->num);
-	else sprintf(S->s, "%%d");
+        clearString(S);
+        if (F->num) sprintf(S->s, "%%%dd", F->num);
+        else sprintf(S->s, "%%d");
       }
       F->string = copyString(S->s, MEM_FORMAT);
       s++;
     } else {
       F->type = F_STRING;
       for (; *s && (*s != '%' || s[1] == '%'); s++) {
-	char c = *s;
-	if (c == '%') s++;
-	else if (c == '\\') {
-	  switch (s[1]) {
-	  case 'n':  c = '\n'; break;
-	  case 't':  c = '\t'; break;
-	  case 'b':  c = '\b'; break;
-	  case 'r':  c = '\r'; break;
-	  case 'f':  c = '\f'; break;
-	  case 'a':  c = '\a'; break;
-	  case 'v':  c = '\v'; break;
-	  case '\'': c = '\''; break;
-	  case '"':  c = '"';  break;
-	  case '\\': c = '\\'; break;
-	  default: c = s[1];
-	  }
-	  s++;
-	}
-	stringCat(S, c);
+        char c = *s;
+        if (c == '%') s++;
+        else if (c == '\\') {
+          switch (s[1]) {
+          case 'n':  c = '\n'; break;
+          case 't':  c = '\t'; break;
+          case 'b':  c = '\b'; break;
+          case 'r':  c = '\r'; break;
+          case 'f':  c = '\f'; break;
+          case 'a':  c = '\a'; break;
+          case 'v':  c = '\v'; break;
+          case '\'': c = '\''; break;
+          case '"':  c = '"';  break;
+          case '\\': c = '\\'; break;
+          default: c = s[1];
+          }
+          s++;
+        }
+        stringCat(S, c);
       }
       F->string = copyString(S->s, MEM_FORMAT);
     }
@@ -1558,7 +1558,7 @@ void formattedOutput(Format F) {
     P = lookupLabel(F->label);
     /*
     if (!P) fatalError("A node labeled \"%s\" is in the output format but "
-		       "doesn't exist in the\ncurrent pattern.", F->label);
+                       "doesn't exist in the\ncurrent pattern.", F->label);
     */
     printNodeTree(P, F);
     break;
@@ -1615,10 +1615,11 @@ char wordsMatch(Node P, Tree T) {
     case W_NONE: break;
     case W_CONST: /* if (V->word == W) result = TRUE; break; */
       if (IgnoreCase) {
-	if (!strcasecmp(V->string, W->name)) result = TRUE; break;
+        if (!strcasecmp(V->string, W->name)) result = TRUE;
       } else {
-	if (!strcmp(V->string, W->name)) result = TRUE; break;
+        if (!strcmp(V->string, W->name)) result = TRUE;
       }
+      break;
     case W_REGEXP: if (regExpMatch(V->regExp, W->name)) result = TRUE; break;
     }
   }
@@ -1662,7 +1663,7 @@ char matchPattern(Node P, Tree T) {
     if (!match) clearMatches(P);
   }
   T->match[P->num] = match;
-  return match;			  
+  return match;
 }
 
 #ifdef JUNK
@@ -1677,15 +1678,15 @@ char matchFullPattern(Node P, Sentence S) {
     if (matchPattern(P, T)) {
       if (FilterMode) return TRUE;
       if (SMatchNum == 0) {
-	formattedOutput(SentenceFormat);
-	if (!MatchFormat && PrintComments) printComment(CurrentSentence);
+        formattedOutput(SentenceFormat);
+        if (!MatchFormat && PrintComments) printComment(CurrentSentence);
       }
       SMatchNum++; PMatchNum++;
       if (MatchFormat) formattedOutput(MatchFormat);
       else {
-	if (WholeSentence) printTree(Top, DefaultFormat);
-	else printMarkedTrees(DefaultFormat);
-	putchar('\n');
+        if (WholeSentence) printTree(Top, DefaultFormat);
+        else printMarkedTrees(DefaultFormat);
+        putchar('\n');
       }
       clearAllMatches();
       if (MatchMode != M_ALL) return TRUE;
@@ -1749,30 +1750,30 @@ void matchPatterns(void) {
       Pattern P = CurrentPattern = Patterns[p];
       if (TMatchMode == M_FIRST && P->matchNum > 0) continue;
       if (matchPattern(P->head, T)) {
-	SMatchNum++; P->matchNum++;
+        SMatchNum++; P->matchNum++;
         if (TMatchMode == M_FILTER) {
-	  done = TRUE;
-	  break;
-	}
-	if (SMatchNum == 1) {
-	  formattedOutput(SentenceFormat);
-	  if (!MatchFormat && PrintComments) printComment(CurrentSentence);
-	}
-	if (MatchFormat) formattedOutput(MatchFormat);
-	else {
-	  if (WholeSentence) printTree(Top, DefaultFormat);
-	  else printMarkedTrees(DefaultFormat);
-	  putchar('\n');
-	}
-	clearAllMatches();
+          done = TRUE;
+          break;
+        }
+        if (SMatchNum == 1) {
+          formattedOutput(SentenceFormat);
+          if (!MatchFormat && PrintComments) printComment(CurrentSentence);
+        }
+        if (MatchFormat) formattedOutput(MatchFormat);
+        else {
+          if (WholeSentence) printTree(Top, DefaultFormat);
+          else printMarkedTrees(DefaultFormat);
+          putchar('\n');
+        }
+        clearAllMatches();
 
-	if (PMatchMode == M_FIRST) {
-	  if (TMatchMode == M_FIRST && SMatchNum) done = TRUE;
-	  else if (TMatchMode == M_ALL) break;
-	} else /* PMatchMode == M_ALL */ {
-	  if (TMatchMode == M_FIRST && SMatchNum == NumPatterns) done = TRUE;
-	  /* If M_ALL/M_ALL, just keep going. */
-	}
+        if (PMatchMode == M_FIRST) {
+          if (TMatchMode == M_FIRST && SMatchNum) done = TRUE;
+          else if (TMatchMode == M_ALL) break;
+        } else /* PMatchMode == M_ALL */ {
+          if (TMatchMode == M_FIRST && SMatchNum == NumPatterns) done = TRUE;
+          /* If M_ALL/M_ALL, just keep going. */
+        }
       }
     }
   }
@@ -2150,7 +2151,7 @@ char check_SAME_NAME(Link L, Tree T) {
 /********************************* Link Types ********************************/
 
 void addLinkType(int type, char *code, int cost, char (*match)(Link, Tree),
-		 char (*check)(Link, Tree)) {
+                 char (*check)(Link, Tree)) {
   Ltype L = Ltypes + type;
   L->type  = type;
   L->code  = code;
@@ -2164,63 +2165,63 @@ void addLinkType(int type, char *code, int cost, char (*match)(Link, Tree),
 void registerLinkTypes(void) {
   Ltypes = smartMalloc(LINK_TYPES * sizeof(struct ltype), MEM_LINK);
   addLinkType(DOM_LEFT,        "<<,", 2, 
-	      match_DOM_LEFT, check_DOM_LEFT);
+              match_DOM_LEFT, check_DOM_LEFT);
   addLinkType(IS_DOM_LEFT,     ">>,", 2, 
-	      match_IS_DOM_LEFT, check_IS_DOM_LEFT);
+              match_IS_DOM_LEFT, check_IS_DOM_LEFT);
   addLinkType(DOM_RIGHT,       "<<`", 2, 
-	      match_DOM_RIGHT, check_DOM_RIGHT);
+              match_DOM_RIGHT, check_DOM_RIGHT);
   addLinkType(IS_DOM_RIGHT,    ">>`", 2, 
-	      match_IS_DOM_RIGHT, check_IS_DOM_RIGHT);
+              match_IS_DOM_RIGHT, check_IS_DOM_RIGHT);
   addLinkType(DOM_ONLY,        "<<:", 2, 
-	      match_DOM_ONLY, check_DOM_ONLY);
+              match_DOM_ONLY, check_DOM_ONLY);
   addLinkType(IS_DOM_ONLY,     ">>:", 2, 
-	      match_IS_DOM_ONLY, check_IS_DOM_ONLY);
+              match_IS_DOM_ONLY, check_IS_DOM_ONLY);
   addLinkType(DOMINATES,       "<<",  3, 
-	      match_DOMINATES, check_DOMINATES);
+              match_DOMINATES, check_DOMINATES);
   addLinkType(IS_DOMINATED,    ">>",  2, 
-	      match_IS_DOMINATED, check_IS_DOMINATED);
+              match_IS_DOMINATED, check_IS_DOMINATED);
   addLinkType(HAS_CHILD_LEFT,  "<,",  1, 
-	      match_HAS_CHILD_NUM, check_HAS_CHILD_NUM);
+              match_HAS_CHILD_NUM, check_HAS_CHILD_NUM);
   addLinkType(HAS_CHILD_RIGHT, "<`",  1, 
-	      match_HAS_CHILD_NUM, check_HAS_CHILD_NUM);
+              match_HAS_CHILD_NUM, check_HAS_CHILD_NUM);
   addLinkType(HAS_CHILD_ONLY,  "<:",  1, 
-	      match_HAS_CHILD_ONLY, check_HAS_CHILD_ONLY);
+              match_HAS_CHILD_ONLY, check_HAS_CHILD_ONLY);
   addLinkType(HAS_CHILD,       "<",   2, 
-	      match_HAS_CHILD, check_HAS_CHILD);
+              match_HAS_CHILD, check_HAS_CHILD);
   addLinkType(IS_CHILD_LEFT,   ">,",  1, 
-	      match_IS_CHILD_NUM, check_IS_CHILD_NUM);
+              match_IS_CHILD_NUM, check_IS_CHILD_NUM);
   addLinkType(IS_CHILD_RIGHT,  ">`",  1, 
-	      match_IS_CHILD_NUM, check_IS_CHILD_NUM);
+              match_IS_CHILD_NUM, check_IS_CHILD_NUM);
   addLinkType(IS_CHILD_ONLY,   ">:",  1, 
-	      match_IS_CHILD_ONLY, check_IS_CHILD_ONLY);
+              match_IS_CHILD_ONLY, check_IS_CHILD_ONLY);
   addLinkType(IS_CHILD,        ">",   1, 
-	      match_IS_CHILD, check_IS_CHILD);
+              match_IS_CHILD, check_IS_CHILD);
   addLinkType(IS_PRIOR,        "..",  4, 
-	      match_IS_PRIOR, check_IS_PRIOR);
+              match_IS_PRIOR, check_IS_PRIOR);
   addLinkType(IS_AFTER,        ",,",  4, 
-	      match_IS_AFTER, check_IS_AFTER);
+              match_IS_AFTER, check_IS_AFTER);
   addLinkType(IMM_PRIOR,       ".",   2, 
-	      match_IMM_PRIOR, check_IMM_PRIOR);
+              match_IMM_PRIOR, check_IMM_PRIOR);
   addLinkType(IMM_AFTER,       ",",   2, 
-	      match_IMM_AFTER, check_IMM_AFTER);
+              match_IMM_AFTER, check_IMM_AFTER);
   addLinkType(SIS_PRIOR,       "$..", 2, 
-	      match_SIS_PRIOR, check_SIS_PRIOR);
+              match_SIS_PRIOR, check_SIS_PRIOR);
   addLinkType(SIS_AFTER,       "$,,", 2, 
-	      match_SIS_AFTER, check_SIS_AFTER);
+              match_SIS_AFTER, check_SIS_AFTER);
   addLinkType(SIS_IMM_PRIOR,   "$.",  1, 
-	      match_SIS_IMM_PRIOR, check_SIS_IMM_PRIOR);
+              match_SIS_IMM_PRIOR, check_SIS_IMM_PRIOR);
   addLinkType(SIS_IMM_AFTER,   "$,",  1, 
-	      match_SIS_IMM_AFTER, check_SIS_IMM_AFTER);
+              match_SIS_IMM_AFTER, check_SIS_IMM_AFTER);
   addLinkType(HAS_SIS,         "$",   2, 
-	      match_HAS_SIS, check_HAS_SIS);
+              match_HAS_SIS, check_HAS_SIS);
   addLinkType(HAS_CHILD_NUM,   "<",   1, 
-	      match_HAS_CHILD_NUM, check_HAS_CHILD_NUM);
+              match_HAS_CHILD_NUM, check_HAS_CHILD_NUM);
   addLinkType(IS_CHILD_NUM,    ">",   1, 
-	      match_IS_CHILD_NUM, check_IS_CHILD_NUM);
+              match_IS_CHILD_NUM, check_IS_CHILD_NUM);
   addLinkType(EQUAL,           "=",   1, 
-	      match_EQUAL, check_EQUAL);
+              match_EQUAL, check_EQUAL);
   addLinkType(SAME_NAME,       "~",   5, 
-	      match_SAME_NAME, check_SAME_NAME);
+              match_SAME_NAME, check_SAME_NAME);
 }
 
 
@@ -2279,8 +2280,8 @@ char parseTree(FILE *file, Sentence S) {
       if (comment->numChars > 0) stringCat(comment, '\n');
       /* do {c = fgetc(file);} while (isspace(c) && c != '\n'); */
       while (c != '\n' && c != EOF) {
-	stringCat(comment, c);
-	c = fgetc(file);
+        stringCat(comment, c);
+        c = fgetc(file);
       }
       if (c == EOF) return 0;
       c = fgetc(file);
@@ -2298,21 +2299,21 @@ char parseTree(FILE *file, Sentence S) {
   for (; c != EOF; c = fgetc(file)) {
     if (c == OpenTreeChar) {
       if (inWord) {
-	setName(T, S, word->s);
-	inWord = FALSE;
+        setName(T, S, word->s);
+        inWord = FALSE;
       }
       N = addTree(S);
       if (T) {
-	if (!T->word) fatalError("Tree %d has a symbol with no name.  "
-				 "That's not allowed.", SentenceNum + 1);
-	addKid(N, T);
+        if (!T->word) fatalError("Tree %d has a symbol with no name.  "
+                                 "That's not allowed.", SentenceNum + 1);
+        addKid(N, T);
       }
       T = N;
       depth++;
     } else if (c == CloseTreeChar) {
       if (inWord) {
-	setName(T, S, word->s);
-	inWord = FALSE;
+        setName(T, S, word->s);
+        inWord = FALSE;
       } else if (!T->word) {
         fatalError("Tree %d has a node with no symbol name.  "
                    "That's not allowed.", SentenceNum + 1);
@@ -2322,8 +2323,8 @@ char parseTree(FILE *file, Sentence S) {
       if (depth == 0) break;
     } else if (isspace(c)) {
       if (inWord) {
-	setName(T, S, word->s);
-	inWord = FALSE;
+        setName(T, S, word->s);
+        inWord = FALSE;
       }
     } else {
       if (!inWord) clearString(word);
@@ -2343,22 +2344,22 @@ void loadWords(FILE *file) {
   while ((c = fgetc(file)) != EOF) {
     if (isspace(c) || c == OpenTreeChar || c == CloseTreeChar) {
       if (inWord) {
-	if (!hashTableLookup(WordHash, S->s)) {
-	  Word W = smartCalloc(1, sizeof(struct word), MEM_WORD);
-	  W->name = copyString(S->s, MEM_WORD);
-	  hashTableInsert(WordHash, W->name, W, FALSE);
-	}
-	inWord = FALSE;
+        if (!hashTableLookup(WordHash, S->s)) {
+          Word W = smartCalloc(1, sizeof(struct word), MEM_WORD);
+          W->name = copyString(S->s, MEM_WORD);
+          hashTableInsert(WordHash, W->name, W, FALSE);
+        }
+        inWord = FALSE;
       }
       if (c == OpenTreeChar) depth++;
       else if (c == CloseTreeChar) {
-	depth--;
-	if (depth == 0) NumSentences++;
+        depth--;
+        if (depth == 0) NumSentences++;
       }
     } else {
       if (!inWord) {
-	clearString(S);
-	inWord = TRUE;
+        clearString(S);
+        inWord = TRUE;
       }
       stringCat(S, c);
     }
@@ -2381,7 +2382,7 @@ void writeWords(FILE *out) {
   int i, j;
   Word W, P = NULL;
   WordList = smartMalloc(hashTableNumEntries(WordHash) * sizeof(Word), 
-			 MEM_WORD);
+                         MEM_WORD);
   hashTableForEach(WordHash, writeWord, NULL);
   qsort(WordList, NumWords, sizeof(Word), compareWords);
   
@@ -2406,7 +2407,7 @@ void prepareCorpus(char *infile, char *outfile) {
   out = fatalWriteFile(outfile, FALSE);
 
   WordHash = hashTableCreate(INIT_HASH, 2, hashString, compareStrings, 
-			     MEM_WORD);
+                             MEM_WORD);
 
   /* Write the header: */
   if (CCGMode) writeBinString(out, COOKIE_CCG, -1);
@@ -2430,12 +2431,12 @@ void prepareCorpus(char *infile, char *outfile) {
       Tree T = S->tree[i];
       writeBinInt(out, T->word->num);
       if (ManyKids) 
-	writeBinShort(out, T->numKids);
+        writeBinShort(out, T->numKids);
       else {
-	if (T->numKids >= 256)
-	  fatalError("A parse tree node has %d kids.  You must use the -K flag"
-		     "\nwhen preparing this corpus.", T->numKids);
-	writeBinChar(out, (unsigned char) T->numKids);
+        if (T->numKids >= 256)
+          fatalError("A parse tree node has %d kids.  You must use the -K flag"
+                 "\nwhen preparing this corpus.", T->numKids);
+        writeBinChar(out, (unsigned char) T->numKids);
       }
     }
     returnSentence(S);
@@ -2477,20 +2478,20 @@ void performExtractions(FILE *file) {
     Top = CurrentSentence->tree[0];
     while (SMatchNum == SentenceNum && val == 2) {
       if (TMatchNum <= 0 || TMatchNum > CurrentSentence->numTrees)
-	fatalError("Node %d doesn't exist in sentence %d\n", 
-		   TMatchNum, SMatchNum);
+        fatalError("Node %d doesn't exist in sentence %d\n", 
+                   TMatchNum, SMatchNum);
       CurrentPattern->head->tree = 
-	CurrentSentence->tree[TMatchNum - 1];
+            CurrentSentence->tree[TMatchNum - 1];
       
       if (first) {
-	formattedOutput(SentenceFormat);
-	first = FALSE;
+        formattedOutput(SentenceFormat);
+        first = FALSE;
       }
       if (MatchFormat) formattedOutput(MatchFormat);
       else {
-	if (WholeSentence) printTree(Top, DefaultFormat);
-	else printTree(CurrentPattern->head->tree, DefaultFormat);
-	putchar('\n');
+        if (WholeSentence) printTree(Top, DefaultFormat);
+        else printTree(CurrentPattern->head->tree, DefaultFormat);
+        putchar('\n');
       }
       val = fscanf(file, " %d:%d", &SMatchNum, &TMatchNum);
     }
@@ -2529,13 +2530,13 @@ int usage(char *progName) {
   debug("  -d           prevents the reordering of links for greater efficiency\n");
   debug("  -r <seconds> prints the completion percentage to stderr this often\n");
   debug("  -e           In place of a pattern, a file is given which specifies the\n"
-	"               sentences and node numbers (s:n) to extract\n");
+        "               sentences and node numbers (s:n) to extract\n");
   debug("  -p <text-file> <corpus>  Converts a text file to a binary corpus file.\n");
   debug("  -z           pretty-prints the pattern (for debugging patterns)\n");
   debug("  -C           sentence comments will be stored when writing a corpus with\n"
-	"               -p or printed on a match when searching.\n");
+        "               -p or printed on a match when searching.\n");
   debug("  -K           if any parse tree node has more than 255 kids, you must\n"
-	"               use this flag when building the corpus.\n");
+        "               use this flag when building the corpus.\n");
   debug("  -h           prints this message and a list of the link codes.\n");
   debug("\nOUTPUT FORMAT FIELDS:\n");
   debug("Non-trees:\n");
@@ -2546,7 +2547,7 @@ int usage(char *progName) {
   debug("  %%j           the match number on the current sentence using this pattern\n");
   debug("  %%c           the sentence comment, if there is one\n");
   debug("  Immediately following the %% can be a positive or negative number "
-	"specifying\n  the format width, as with printf.\n");
+        "specifying\n  the format width, as with printf.\n");
   debug("Trees:\n");
   debug("  %%h           the tree matched by the head (first) node of the pattern\n");
   debug("  %%m           all marked nodes, or the head node if none are marked\n");
@@ -2726,7 +2727,7 @@ int main(int argc, char *argv[]) {
   if (!CorpusFile) CorpusFile = getenv("TGREP2_CORPUS");
   if (!CorpusFile) 
     fatalError("A corpus file must be specified with either the -c option\n"
-	       "or the TGREP2_CORPUS environment variable.");
+               "or the TGREP2_CORPUS environment variable.");
   corpus = openCorpusFile(CorpusFile);
 
   registerLinkTypes();
@@ -2760,7 +2761,7 @@ int main(int argc, char *argv[]) {
       clearString(pattern);
       /* If the pattern is the name of a file, load it into a string. */
       if (!loadPatternFile(argv[i], pattern))
-	stringAppend(pattern, argv[i]);
+        stringAppend(pattern, argv[i]);
 
       /* Parse and compile the patterns. */
       buildPattern(pattern->s);
