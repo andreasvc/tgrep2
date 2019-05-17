@@ -201,6 +201,10 @@ extern union nandunion NaNdunion;
 #define UNZIP    "gzip -d"
 #define ZIP      "gzip -1"
 #define COMPRESS "compress"
+#define LZ4UNZIP "lz4 -d"
+#define LZ4ZIP   "lz4 -9"
+#define ZSTDUNZIP "zstd -d"
+#define ZSTDZIP   "zstd -3"
 
 /* Miscellaneous */
 #define MAX_FILENAME 512

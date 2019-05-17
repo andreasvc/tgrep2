@@ -427,6 +427,18 @@ FILE *readFile(char *fileName) {
       return readZippedFile(BUNZIP2, fileName);
     return NULL;
   }
+  /* Check if already ends in .lz4 and assume compressed */
+  if (stringEndsIn(fileName, ".lz4")) {
+    if (!stat(fileName, &statbuf))
+      return readZippedFile(LZ4UNZIP, fileName);
+    return NULL;
+  }
+  /* Check if already ends in .zst and assume compressed */
+  if (stringEndsIn(fileName, ".zst")) {
+    if (!stat(fileName, &statbuf))
+      return readZippedFile(ZSTDUNZIP, fileName);
+    return NULL;
+  }
   /* Try just opening normally */
   if (!stat(fileName, &statbuf))
     return fopen(fileName, "r");
@@ -456,6 +468,10 @@ static FILE *writeZippedFile(char *fileName, flag append) {
   escapeSingleQuotes(fileName, escapedfilename);
   if (stringEndsIn(fileName, ".bz2") || stringEndsIn(fileName, ".bz"))
     sprintf(buf, "%s %s '%s'", BZIP2, op, escapedfilename);
+  else if (stringEndsIn(fileName, ".lz4"))
+    sprintf(buf, "%s %s '%s'", LZ4ZIP, op, escapedfilename);
+  else if (stringEndsIn(fileName, ".zst"))
+    sprintf(buf, "%s %s '%s'", ZSTDZIP, op, escapedfilename);
   else if (stringEndsIn(fileName, ".Z"))
     sprintf(buf, "%s %s '%s'", COMPRESS, op, escapedfilename);
   else
@@ -472,9 +488,10 @@ FILE *writeFile(char *fileName, flag append) {
   if (fileName[0] == '|')
     return openPipe(fileName + 1, "w");
 
-  /* Check if ends in .gz, .Z, .bz, .bz2 */
-  if (stringEndsIn(fileName, ".gz") || stringEndsIn(fileName, ".Z") ||
-      stringEndsIn(fileName, ".bz") || stringEndsIn(fileName, ".bz2"))
+  /* Check if extension matches a known compressor */
+  if (stringEndsIn(fileName, ".gz") || stringEndsIn(fileName, ".Z")
+          || stringEndsIn(fileName, ".bz") || stringEndsIn(fileName, ".bz2")
+          || stringEndsIn(fileName, ".lz4") || stringEndsIn(fileName, ".zst"))
     return writeZippedFile(fileName, append);
   return (append) ? fopen(fileName, "a") : fopen(fileName, "w");
 }
